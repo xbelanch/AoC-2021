@@ -3,6 +3,8 @@
 #include <string.h>
 
 #define MAX_SIZE_LINES 2048
+char *lines[MAX_SIZE_LINES];
+int lines_size = 0;
 
 int partOne(char *input) {
     int horizontal_position = 0;
@@ -14,8 +16,6 @@ int partOne(char *input) {
         return (1);
     }
 
-    char *lines[MAX_SIZE_LINES];
-    int lines_size = 0;
     lines[lines_size] = (char*)malloc(sizeof(char) * 32);
     int len = 0;
     char chr;
@@ -35,7 +35,6 @@ int partOne(char *input) {
     fprintf(stdout, "Number of lines: %d\n", lines_size);
 
     for (int i = 0; i < lines_size; ++i) {
-            // fprintf(stdout, "%s\n", lines[i]);
             char *units = strchr(lines[i], ' ');
             int value = atoi(&units[1]);
             if (lines[i][0] == 'f') { // forward
@@ -51,11 +50,34 @@ int partOne(char *input) {
     return (horizontal_position * depth);
 }
 
+unsigned long long partTwo() {
+    unsigned long long horizontal_position = 0;
+    unsigned long long depth = 0;
+    unsigned long long aim = 0;
+
+    for (int i = 0; i < lines_size; ++i) {
+            char *units = strchr(lines[i], ' ');
+            int value = atoi(&units[1]);
+            if (lines[i][0] == 'f') { // forward
+                horizontal_position += value;
+                depth += value * aim;
+            } else if (lines[i][0] == 'd') { // down
+                aim += value;
+            } else if (lines[i][0] == 'u') { // up
+                aim -= value;
+            }
+    }
+
+    return (horizontal_position * depth);
+}
+
+
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv[0];
 
     printf("Solution for part One: %d\n", partOne("input.txt"));
+    printf("Solution for part Two: %lld\n", partTwo());
     return (0);
 }
