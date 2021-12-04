@@ -4,7 +4,7 @@
 #include <math.h>
 
 // function definition
-int convert(unsigned long long n) {
+unsigned long long convert(unsigned long long n) {
   int dec = 0, i = 0, rem;
 
   while (n!=0) {
@@ -13,7 +13,6 @@ int convert(unsigned long long n) {
     dec += rem * pow(2, i);
     ++i;
   }
-
   return dec;
 }
 
@@ -25,15 +24,15 @@ unsigned long long partOne(char *input) {
     }
 
     char c = getc(fp);
-    char *line[48];
+    char *line[1024];
     size_t line_size = 0;
-    line[line_size] = malloc(sizeof(char) * 32);
+    line[line_size] = malloc(sizeof(char) * 512);
     size_t len = 0;
     while (c != EOF) {
         if (c == '\n') {
             // putchar('\n');
             line[line_size++][len] = '\0';
-            line[line_size] = malloc(sizeof(char) * 32);
+            line[line_size] = malloc(sizeof(char) * 512);
             len = 0;
         } else {
             // putchar(c);
@@ -41,12 +40,13 @@ unsigned long long partOne(char *input) {
         }
         c = getc(fp);
     }
-
+    line[line_size][len] = '\0';
+    printf("line size: %ld\n", line_size);
     fclose(fp);
 
     char *binary_number[line_size];
     for (size_t j = 0; j < strlen(line[0]); ++j) {
-        binary_number[j] = malloc(sizeof(char) * strlen(line[0]));
+        binary_number[j] = malloc(sizeof(char) * 1024);
         for (size_t i = 0; i < line_size; ++i) {
             binary_number[j][i] = line[i][j];
         }
@@ -70,9 +70,9 @@ unsigned long long partOne(char *input) {
         count_zero = 0;
     }
     gamma_rate[strlen(line[0])] = '\0';
-    printf("gamma rate in binary: %s\n", gamma_rate);
+    // printf("gamma rate in binary: %s\n", gamma_rate);
     int gamma_rate_base10 = convert(atoll(gamma_rate));
-    printf("gamma rate in decimal: %d\n", gamma_rate_base10);
+    // printf("gamma rate in decimal: %d\n", gamma_rate_base10);
 
     char *epsilon_rate = malloc(sizeof(char) * strlen(gamma_rate));
     for (size_t i = 0; i < strlen(gamma_rate); ++i) {
@@ -83,9 +83,9 @@ unsigned long long partOne(char *input) {
         }
     }
     epsilon_rate[strlen(line[0])] = '\0';
-    printf("epsilon rate in binary: %s\n", epsilon_rate);
+    // printf("epsilon rate in binary: %s\n", epsilon_rate);
     int epsilon_rate_base10 = convert(atoll(epsilon_rate));
-    printf("epsilon rate in decimal: %d\n", epsilon_rate_base10);
+    // printf("epsilon rate in decimal: %d\n", epsilon_rate_base10);
 
     return (gamma_rate_base10 * epsilon_rate_base10);
 }
@@ -95,7 +95,8 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv[0];
 
-    fprintf(stdout, "Solution for part One of Day3: %llu\n", partOne("sample-01.txt"));
+    fprintf(stdout, "Solution for (sample) part One of Day3: %llu\n", partOne("sample-01.txt"));
+    fprintf(stdout, "Solution for part One of Day3: %llu\n", partOne("input.txt"));
 
     return (0);
 }
