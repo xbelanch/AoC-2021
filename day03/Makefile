@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -std=c11 -pedantic -ggdb
-LIBS=
+LIBS=-lm
 INPUT=
 
 .PHONY: test
