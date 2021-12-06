@@ -5,7 +5,7 @@
 
 // function definition
 // stolen from...
-unsigned long long convert(unsigned long long n) {
+int convert(int n) {
   int dec = 0, i = 0, rem;
 
   while (n!=0) {
@@ -236,7 +236,49 @@ size_t partTwo(char *input) {
     return (oxygen_generator_rating * co2_scrubber_rating);
 }
 
+
+#define SAMPLE_SIZE 12
+#define SAMPLE_BITS 5
+#define INPUT_SIZE 1000
+#define INPUT_BITS 12
+
+int values[SAMPLE_SIZE];
+int idx_val = 0;
+
+void dumpValues() {
+    // Dump array of input values
+    for (int i = 0; i < idx_val; ++i) {
+        printf("%d,", values[i]);
+    }
+}
+
+size_t readInputFile(char *input) {
+    FILE *fp = fopen(input, "rb");
+
+    char *line = malloc(sizeof(char) * 6);
+    memset(line, 0, sizeof(char) * SAMPLE_BITS);
+    while ((fgets(line, 6, fp) != NULL)) {
+        if (line[0] != '\n')
+            values[idx_val++] = convert(atoi(line));
+    }
+
+    dumpValues();
+
+    fclose(fp);
+    return (0);
+}
+
 int main(int argc, char *argv[])
+{
+    (void) argc;
+    (void) argv[0];
+
+    readInputFile("sample-01.txt");
+
+    return (0);
+}
+
+int main2(int argc, char *argv[])
 {
     (void) argc;
     (void) argv[0];
