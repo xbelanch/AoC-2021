@@ -3,6 +3,50 @@
 #include <string.h>
 #include <math.h>
 
+#define SAMPLE_SIZE 12
+#define SAMPLE_BITS 5
+#define INPUT_SIZE 1000
+#define INPUT_BITS 12
+#define TRUE 1
+#define FALSE 0
+
+size_t values[INPUT_SIZE];
+int idx_val = 0;
+
+
+unsigned int getBit(int value, int bitPosition) {
+    return((value >> bitPosition) & 1);
+}
+
+unsigned int getCommonBit(size_t *arr, size_t size, int bitPosition, int bitCriteria) {
+    unsigned bit[2] = {0, 0};
+    for (size_t i = 0; i < size; ++i) {
+        if (getBit(arr[i], bitPosition)) { // 1
+            bit[1]++;
+        } else {
+            bit[0]++;
+        }
+    }
+
+    if (bitCriteria == 1) {
+        if (bit[1] > bit[0] || bit[1] ==  bit[0]) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    if (bitCriteria == 0) {
+        if (bit[1] > bit[0] || bit[1] ==  bit[0]) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    return (99);
+}
+
 size_t bin2dec(size_t n) {
   size_t dec = 0, i = 0, rem;
   while (n!=0) {
@@ -25,6 +69,29 @@ void dec2bin(size_t c)
      }
    }
    putchar('\n');
+}
+
+size_t readInputFile(char *input) {
+    FILE *fp = fopen(input, "rb");
+
+    char *line = malloc(sizeof(char) * INPUT_BITS + 1);
+    memset(line, 0, sizeof(char) * INPUT_BITS);
+    while ((fgets(line, INPUT_BITS + 1, fp) != NULL)) {
+        if (line[0] != '\n')
+            {
+                // printf("%s : %lu : %lu\n", line, atol(line), bin2dec(atol(line)));
+                values[idx_val++] = bin2dec(atol(line));
+            }
+    }
+
+    fclose(fp);
+    return (0);
+}
+
+void dumpValues(size_t *values, size_t size) {
+    for (size_t i = 0; i < size; ++i) {
+        dec2bin(values[i]);
+    }
 }
 
 // TODO: Rewrite this shit from scratch
@@ -101,73 +168,6 @@ unsigned long long partOne(char *input) {
     return (gamma_rate_base10 * epsilon_rate_base10);
 }
 
-#define SAMPLE_SIZE 12
-#define SAMPLE_BITS 5
-#define INPUT_SIZE 1000
-#define INPUT_BITS 12
-#define TRUE 1
-#define FALSE 0
-
-unsigned int getBit(int value, int bitPosition) {
-    return((value >> bitPosition) & 1);
-}
-
-unsigned int getCommonBit(size_t *arr, size_t size, int bitPosition, int bitCriteria) {
-    unsigned bit[2] = {0, 0};
-    for (size_t i = 0; i < size; ++i) {
-        if (getBit(arr[i], bitPosition)) { // 1
-            bit[1]++;
-        } else {
-            bit[0]++;
-        }
-    }
-
-    if (bitCriteria == 1) {
-        if (bit[1] > bit[0] || bit[1] ==  bit[0]) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    if (bitCriteria == 0) {
-        if (bit[1] > bit[0] || bit[1] ==  bit[0]) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    return (99);
-}
-
-size_t values[INPUT_SIZE];
-int idx_val = 0;
-
-size_t readInputFile(char *input) {
-    FILE *fp = fopen(input, "rb");
-
-    char *line = malloc(sizeof(char) * INPUT_BITS + 1);
-    memset(line, 0, sizeof(char) * INPUT_BITS);
-    while ((fgets(line, INPUT_BITS + 1, fp) != NULL)) {
-        if (line[0] != '\n')
-            {
-                printf("%s : %lu : %lu\n", line, atol(line), bin2dec(atol(line)));
-                // values[idx_val++] = bin2dec(atoi(line));
-            }
-    }
-
-    fclose(fp);
-    return (0);
-}
-
-void dumpValues(size_t *values, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
-        // dec2bin(values[i]);
-        printf("%lu\n", values[i]);
-    }
-}
-
 size_t getOGR(size_t *bit_criteria, size_t left, int checkBit)
     {
         size_t ogr = 0;
@@ -176,7 +176,7 @@ size_t getOGR(size_t *bit_criteria, size_t left, int checkBit)
 
             // set 1 for OGR
             unsigned int commonBit = getCommonBit(bit_criteria, left, checkBit, 1);
-            printf("check bit: %d, common bit: %d\n", checkBit, commonBit);
+            // printf("check bit: %d, common bit: %d\n", checkBit, commonBit);
 
             size_t tmp_size = 0;
             for (size_t i = 0; i < left; ++i) {
@@ -187,7 +187,7 @@ size_t getOGR(size_t *bit_criteria, size_t left, int checkBit)
                 }
             }
 
-            printf("tmp_size: %lu\n", tmp_size);
+            // printf("tmp_size: %lu\n", tmp_size);
             tmp = malloc(sizeof(size_t) * tmp_size);
             int j = 0;
             for (size_t i = 0; i < left; ++i) {
@@ -252,27 +252,25 @@ size_t getCO2(size_t *bit_criteria, size_t left, int checkBit)
 
 size_t partTwo() {
     readInputFile("input.txt");
-    // dumpValues(values, INPUT_SIZE);
-    // size_t ogr = 1;
-    // size_t co2 = 1;
+    size_t ogr = 1;
+    size_t co2 = 1;
 
-    // size_t *bit_criteria = malloc(sizeof(size_t) * INPUT_SIZE);
-    // for (size_t i = 0; i < INPUT_SIZE; ++i) {
-    //     bit_criteria[i] = values[i];
-    // }
+    size_t *bit_criteria = malloc(sizeof(size_t) * INPUT_SIZE);
+    for (size_t i = 0; i < INPUT_SIZE; ++i) {
+        bit_criteria[i] = values[i];
+    }
 
-    // dumpValues(bit_criteria, INPUT_SIZE);
-    // ogr = getOGR(bit_criteria, INPUT_SIZE, INPUT_BITS - 1);
+    ogr = getOGR(bit_criteria, INPUT_SIZE, INPUT_BITS - 1);
 
-    // bit_criteria = malloc(sizeof(size_t) * INPUT_SIZE);
-    // for (size_t i = 0; i < INPUT_SIZE; ++i) {
-    //     bit_criteria[i] = values[i];
-    // }
+    bit_criteria = malloc(sizeof(size_t) * INPUT_SIZE);
+    for (size_t i = 0; i < INPUT_SIZE; ++i) {
+        bit_criteria[i] = values[i];
+    }
 
-    // co2 = getCO2(bit_criteria, INPUT_SIZE, INPUT_BITS - 1);
+    co2 = getCO2(bit_criteria, INPUT_SIZE, INPUT_BITS - 1);
 
-    // return (ogr * co2);
-    return (0);
+    return (ogr * co2);
+
 }
 
 int main(int argc, char *argv[])
@@ -280,7 +278,8 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for part Two of Day 3: %lu", partTwo());
+    printf("Solution for part One of Day 3: %llu\n", partOne("input.txt"));
+    printf("Solution for part Two of Day 3: %lu\n", partTwo());
 
     return (0);
 }
