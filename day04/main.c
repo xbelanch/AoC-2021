@@ -86,26 +86,26 @@ size_t partOne(char *input) {
             free(tmp);
             printf("draw_numbers_size: %lu\n", draw_numbers_size);
         }
-        // else
+        else
 
         // get boards
-        // {
-        //     if (line[strlen(line) - 1] == '\n')
-        //         line[strlen(line) - 1] = '\0';
+        {
+            if (line[strlen(line) - 1] == '\n')
+                line[strlen(line) - 1] = '\0';
 
-        //     size_t len = strlen(line);
-        //     size_t len2 = strlen(board[board_size]);
-        //     char *end = &board[board_size][len2] + 1;
-        //     memcpy(end, line, len);
-        //     end = &board[board_size][len2];
-        //     memcpy(end, " ", 1);
-        //     count++;
-        //     if (count % 5 == 0) {
-        //         count = 0;
-        //         board_size++;
-        //         board[board_size] = malloc(sizeof(char) * MAX_SIZE_LINE);
-        //     }
-        // }
+            size_t len = strlen(line);
+            size_t len2 = strlen(board[board_size]);
+            char *end = &board[board_size][len2] + 1;
+            memcpy(end, line, len);
+            end = &board[board_size][len2];
+            memcpy(end, " ", 1);
+            count++;
+            if (count % 5 == 0) {
+                count = 0;
+                board_size++;
+                board[board_size] = malloc(sizeof(char) * MAX_SIZE_LINE);
+            }
+        }
 
         number_line++;
     }
@@ -117,13 +117,14 @@ size_t partOne(char *input) {
     }
     putchar('\n');
     // Dump board data
-    // for (size_t j = 0; j < board_size; ++j) {
-    //     size_t *bd = parseNumbers(board[j], ' ');
-    //     for (size_t i = 0; i < BOARD_COL * BOARD_ROW; ++i) {
-    //         printf("%lu,", bd[i]);
-    //     }
-    //     putchar('\n');
-    // }
+    printf("Boards: \n");
+    for (size_t j = 0; j < board_size; ++j) {
+        size_t *bd = parseNumbers(board[j], ' ');
+        for (size_t i = 0; i < BOARD_COL * BOARD_ROW; ++i) {
+            printf("%lu,", bd[i]);
+        }
+        putchar('\n');
+    }
 
 
     fclose(fp);
