@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_SIZE_LINE 2048
 #define MAX_SIZE_BOARDS 512
@@ -14,11 +15,63 @@ char *draw_numbers;
 size_t draw_numbers_size;
 char *board[MAX_SIZE_BOARDS];
 size_t board_size;
+bool marked[99];
 
 void dumpBoards() {
     for (size_t i = 0; i < board_size; ++i) {
         printf("%lu: %s\n", i, board[i]);
     }
+}
+
+bool checkHorizontallyWinner(size_t *board)
+{
+    for (size_t i = 0; i < BOARD_ROW; ++i) {
+        if (marked[board[i * BOARD_COL]] &&
+            marked[board[i * BOARD_COL + 1]] &&
+            marked[board[i * BOARD_COL + 2]] &&
+            marked[board[i * BOARD_COL + 3]] &&
+            marked[board[i * BOARD_COL + 4]])
+            return true;
+    }
+    return false;
+}
+
+bool checkVerticallyWinner(size_t *board)
+{
+    for (size_t i = 0; i < BOARD_COL; ++i) {
+        if (marked[board[i]] &&
+            marked[board[i + BOARD_ROW]] &&
+            marked[board[i + (BOARD_ROW * 2)]] &&
+            marked[board[i + (BOARD_ROW * 3)]] &&
+            marked[board[i + (BOARD_ROW * 4)]])
+            return true;
+    }
+    return false;
+}
+
+void dumpBingoBoard(size_t *board) {
+    for (size_t j = 0; j < BOARD_COL; ++j) {
+        for (size_t i = 0; i < BOARD_ROW; ++i) {
+            if (marked[board[(j * BOARD_COL) + i]] == true) {
+                printf("[%lu]\t\t", board[(j * BOARD_COL) + i]);
+            } else {
+                printf("%lu\t\t", board[(j * BOARD_COL) + i]);
+            }
+        }
+        putchar('\n');
+    }
+}
+
+size_t sumAllUnmarkedNumbers(size_t *board)
+{
+    size_t sum = 0;
+    for (size_t j = 0; j < BOARD_COL; ++j) {
+        for (size_t i = 0; i < BOARD_ROW; ++i) {
+            if (marked[board[(j * BOARD_COL) + i]] == false)
+                sum += board[(j * BOARD_COL) + i];
+        }
+    }
+    return (sum);
 }
 
 size_t *parseNumbers(char *input, char delimiter) {
@@ -48,7 +101,6 @@ size_t *parseNumbers(char *input, char delimiter) {
 }
 
 size_t partOne(char *input) {
-    size_t solution = 0;
     FILE *fp = fopen(input, "rb");
     if (fp == NULL) {
         fprintf(stderr, "%s not found\n", input);
@@ -110,25 +162,32 @@ size_t partOne(char *input) {
         number_line++;
     }
 
+    // Initalize marked values to false
+    for (size_t i = 0; i < 99; ++i) {
+        marked[i] = false;
+    }
+
     // Dump random draw numbers
     size_t *dw = parseNumbers(draw_numbers, ',');
     for (size_t i = 0; i < draw_numbers_size; ++i) {
-        printf("%lu,", dw[i]);
-    }
-    putchar('\n');
-    // Dump board data
-    printf("Boards: \n");
-    for (size_t j = 0; j < board_size; ++j) {
-        size_t *bd = parseNumbers(board[j], ' ');
-        for (size_t i = 0; i < BOARD_COL * BOARD_ROW; ++i) {
-            printf("%lu,", bd[i]);
+        marked[dw[i]] = true;
+        {
+            for (size_t j = 0; j < board_size; ++j) {
+                size_t *bd = parseNumbers(board[j], ' ');
+                if (checkHorizontallyWinner(bd) ||
+                    checkVerticallyWinner(bd)) {
+                    printf("Round: %lu\n", i);
+                    dumpBingoBoard(bd);
+                    printf("^^^^^^^^^^^^^^^^^^^^^^\n");
+                    printf("%lu\n", dw[i]);
+                    return sumAllUnmarkedNumbers(bd) * dw[i];
+                }
+            }
         }
-        putchar('\n');
     }
-
 
     fclose(fp);
-    return(solution);
+    return(0);
 }
 
 int main(int argc, char *argv[])
