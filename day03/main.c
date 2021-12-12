@@ -3,9 +3,8 @@
 #include <string.h>
 #include <math.h>
 
-
-int bin2dec(int n) {
-  int dec = 0, i = 0, rem;
+size_t bin2dec(size_t n) {
+  size_t dec = 0, i = 0, rem;
   while (n!=0) {
     rem = n % 10;
     n /= 10;
@@ -142,17 +141,20 @@ unsigned int getCommonBit(size_t *arr, size_t size, int bitPosition, int bitCrit
     return (99);
 }
 
-int values[SAMPLE_SIZE];
+size_t values[INPUT_SIZE];
 int idx_val = 0;
 
 size_t readInputFile(char *input) {
     FILE *fp = fopen(input, "rb");
 
-    char *line = malloc(sizeof(char) * 6);
-    memset(line, 0, sizeof(char) * SAMPLE_BITS);
-    while ((fgets(line, 6, fp) != NULL)) {
+    char *line = malloc(sizeof(char) * INPUT_BITS + 1);
+    memset(line, 0, sizeof(char) * INPUT_BITS);
+    while ((fgets(line, INPUT_BITS + 1, fp) != NULL)) {
         if (line[0] != '\n')
-            values[idx_val++] = bin2dec(atoi(line));
+            {
+                printf("%s : %lu : %lu\n", line, atol(line), bin2dec(atol(line)));
+                // values[idx_val++] = bin2dec(atoi(line));
+            }
     }
 
     fclose(fp);
@@ -161,7 +163,8 @@ size_t readInputFile(char *input) {
 
 void dumpValues(size_t *values, size_t size) {
     for (size_t i = 0; i < size; ++i) {
-        dec2bin(values[i]);
+        // dec2bin(values[i]);
+        printf("%lu\n", values[i]);
     }
 }
 
@@ -173,7 +176,7 @@ size_t getOGR(size_t *bit_criteria, size_t left, int checkBit)
 
             // set 1 for OGR
             unsigned int commonBit = getCommonBit(bit_criteria, left, checkBit, 1);
-            // printf("common bit: %d\n", commonBit);
+            printf("check bit: %d, common bit: %d\n", checkBit, commonBit);
 
             size_t tmp_size = 0;
             for (size_t i = 0; i < left; ++i) {
@@ -184,7 +187,7 @@ size_t getOGR(size_t *bit_criteria, size_t left, int checkBit)
                 }
             }
 
-            // printf("tmp_size: %lu\n", tmp_size);
+            printf("tmp_size: %lu\n", tmp_size);
             tmp = malloc(sizeof(size_t) * tmp_size);
             int j = 0;
             for (size_t i = 0; i < left; ++i) {
@@ -198,7 +201,7 @@ size_t getOGR(size_t *bit_criteria, size_t left, int checkBit)
             // dumpValues(bit_criteria, left);
             checkBit--;
             if (checkBit < 0)
-                checkBit = SAMPLE_BITS - 1;
+                checkBit = INPUT_BITS - 1;
 
             if (left == 1)
                 ogr = bit_criteria[left - 1];
@@ -239,7 +242,7 @@ size_t getCO2(size_t *bit_criteria, size_t left, int checkBit)
             // dumpValues(bit_criteria, left);
             checkBit--;
             if (checkBit < 0)
-                checkBit = SAMPLE_BITS - 1;
+                checkBit = INPUT_BITS - 1;
 
             if (left == 1)
                 co2 = bit_criteria[left - 1];
@@ -248,26 +251,28 @@ size_t getCO2(size_t *bit_criteria, size_t left, int checkBit)
     } // end of while
 
 size_t partTwo() {
-    readInputFile("sample-01.txt");
+    readInputFile("input.txt");
+    // dumpValues(values, INPUT_SIZE);
+    // size_t ogr = 1;
+    // size_t co2 = 1;
 
-    size_t ogr = 0;
-    size_t co2 = 0;
+    // size_t *bit_criteria = malloc(sizeof(size_t) * INPUT_SIZE);
+    // for (size_t i = 0; i < INPUT_SIZE; ++i) {
+    //     bit_criteria[i] = values[i];
+    // }
 
-    size_t *bit_criteria = malloc(sizeof(size_t) * SAMPLE_SIZE);
-    for (size_t i = 0; i < SAMPLE_SIZE; ++i) {
-        bit_criteria[i] = values[i];
-    }
+    // dumpValues(bit_criteria, INPUT_SIZE);
+    // ogr = getOGR(bit_criteria, INPUT_SIZE, INPUT_BITS - 1);
 
-    ogr = getOGR(bit_criteria, SAMPLE_SIZE, SAMPLE_BITS - 1);
+    // bit_criteria = malloc(sizeof(size_t) * INPUT_SIZE);
+    // for (size_t i = 0; i < INPUT_SIZE; ++i) {
+    //     bit_criteria[i] = values[i];
+    // }
 
-    bit_criteria = malloc(sizeof(size_t) * SAMPLE_SIZE);
-    for (size_t i = 0; i < SAMPLE_SIZE; ++i) {
-        bit_criteria[i] = values[i];
-    }
+    // co2 = getCO2(bit_criteria, INPUT_SIZE, INPUT_BITS - 1);
 
-    co2 = getCO2(bit_criteria, SAMPLE_SIZE, SAMPLE_BITS - 1);
-
-    return (ogr * co2);
+    // return (ogr * co2);
+    return (0);
 }
 
 int main(int argc, char *argv[])
