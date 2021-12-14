@@ -168,68 +168,8 @@ int parseInput(char *input)
 }
 
 size_t partOne(char *input) {
-    FILE *fp = fopen(input, "rb");
-    if (fp == NULL) {
-        fprintf(stderr, "%s not found\n", input);
-        return(1);
-    }
-
-    char *line = malloc(sizeof(char) * MAX_SIZE_LINE);
-    size_t number_line = 0;
-    int count = 0;
-
-    draw_numbers_size = 0;
-    board_size = 0;
-    board[board_size] = malloc(sizeof(char) * MAX_SIZE_LINE);
-    char *tmp;
-
-    while (fgets(line, MAX_SIZE_LINE, fp)) {
-
-        if (line[0] == '\n')
-            continue;
-
-        // get random draw numbers (firs line of input file)
-        if (number_line == 0) {
-            line[strlen(line) - 1] = '\0'; // remove newline
-            size_t len = strlen(line);
-            draw_numbers = malloc(sizeof(char) * len);
-            tmp = (char*)malloc(sizeof(char) * len);
-            memcpy(draw_numbers, line, len);
-            // get size of draw random numbers
-            memcpy(tmp, line, len);
-            tmp = strtok(line, ",");
-            while (tmp != NULL) {
-                tmp = strtok(NULL, ",");
-                draw_numbers_size++;
-            }
-            free(tmp);
-            printf("draw_numbers_size: %lu\n", draw_numbers_size);
-        }
-        else
-
-        // get boards
-        {
-            if (line[strlen(line) - 1] == '\n')
-                line[strlen(line) - 1] = '\0';
-
-            size_t len = strlen(line);
-            size_t len2 = strlen(board[board_size]);
-            char *end = &board[board_size][len2] + 1;
-            memcpy(end, line, len);
-            end = &board[board_size][len2];
-            memcpy(end, " ", 1);
-            count++;
-            if (count % 5 == 0) {
-                count = 0;
-                board_size++;
-                board[board_size] = malloc(sizeof(char) * MAX_SIZE_LINE);
-            }
-        }
-
-        number_line++;
-    }
-
-    // Initalize marked values to false
+    parseInput(input);
+    // Initalize values to false
     for (size_t i = 0; i < 99; ++i) {
         marked[i] = false;
     }
@@ -243,17 +183,16 @@ size_t partOne(char *input) {
                 size_t *bd = parseNumbers(board[j], ' ');
                 if (checkHorizontallyWinner(bd) ||
                     checkVerticallyWinner(bd)) {
-                    printf("Round: %lu\n", i);
-                    dumpBingoBoard(bd);
-                    printf("^^^^^^^^^^^^^^^^^^^^^^\n");
-                    printf("%lu\n", dw[i]);
+                    // printf("Round: %lu\n", i);
+                    // dumpBingoBoard(bd);
+                    // printf("^^^^^^^^^^^^^^^^^^^^^^\n");
+                    // printf("%lu\n", dw[i]);
                     return sumAllUnmarkedNumbers(bd) * dw[i];
                 }
             }
         }
     }
 
-    fclose(fp);
     return(0);
 }
 
@@ -284,7 +223,6 @@ size_t partTwo(char *input)
                 if (checkHorizontallyWinner(bd) ||
                     checkVerticallyWinner(bd)) {
                     winboards[j] = true;
-                    printf("draw number: %lu winboard: %lu\n", dw[i], j);
                     sum_last_winboard = sumAllUnmarkedNumbers(bd);
                     last_draw_number = dw[i];
                 }
@@ -302,6 +240,7 @@ int main(int argc, char *argv[])
     printf("Solution for the part One of Day 4 (%s): %lu\n", SAMPLE_INPUT, partOne(SAMPLE_INPUT));
     printf("Solution for the part One of Day 4 (%s): %lu\n", INPUT_FILE, partOne(INPUT_FILE));
     printf("Solution for the part Two of Day 4 (%s): %lu\n", SAMPLE_INPUT, partTwo(SAMPLE_INPUT));
+    printf("Solution for the part Two of Day 4 (%s): %lu\n", INPUT_FILE, partTwo(INPUT_FILE));
 
     return (0);
 }
