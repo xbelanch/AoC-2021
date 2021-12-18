@@ -7,6 +7,8 @@
 #define INPUT "input.txt"
 #define MAX_SIZE_LINE 32
 #define MAX_SIZE_INPUT 500
+#define COL_SIZE 32
+#define ROW_SIZE 32
 
 typedef struct point {
     int x;
@@ -22,6 +24,8 @@ char *puzzle_input[MAX_SIZE_INPUT];
 size_t size_input;
 Line *lines;
 
+size_t diagram[COL_SIZE * ROW_SIZE];
+
 void dumpPuzzleInput()
 {
     for (size_t i = 0; i < size_input; ++i) {
@@ -29,16 +33,33 @@ void dumpPuzzleInput()
     }
 }
 
-void dumpLines()
+void dumpLine(size_t idx)
 {
-    for (size_t i = 0; i < size_input; ++i) {
         printf("%d,%d -> %d,%d\n",
-               lines[i].p1.x,
-               lines[i].p1.y,
-               lines[i].p2.x,
-               lines[i].p2.y);
-    }
+               lines[idx].p1.x,
+               lines[idx].p1.y,
+               lines[idx].p2.x,
+               lines[idx].p2.y);
 }
+
+void showDiagram()
+{
+    for (size_t i = 0; i < COL_SIZE * ROW_SIZE; ++i) {
+        if (i % COL_SIZE == 0)
+            putchar('\n');
+        if (diagram[i] == 0) {
+            putchar('.');
+        } else if (diagram[i] == 1) {
+            putchar('1');
+        } else if (diagram[i] == 2) {
+            putchar('2');
+        } else {
+            putchar('?');
+        }
+    }
+    putchar('\n');
+}
+
 
 void parse()
 {
@@ -73,10 +94,46 @@ int readInput(char *input)
 
 size_t partOne(char *input)
 {
+    size_t solution = 0;
     readInput(input);
     parse();
-    dumpLines();
-    return (0);
+
+    for (size_t i = 0; i < ROW_SIZE * COL_SIZE; ++i) {
+        diagram[i] = 0;
+    }
+
+    for (size_t i = 0; i < size_input; ++i) {
+        if (lines[i].p1.x == lines[i].p2.x) {
+            if (lines[i].p2.y > lines[i].p1.y) {
+                for (int j = lines[i].p1.y; j <= lines[i].p2.y; ++j)
+                    diagram[j * ROW_SIZE + lines[i].p1.x] += 1;
+            }
+            if (lines[i].p2.y < lines[i].p1.y) {
+                for (int j = lines[i].p1.y; j >= lines[i].p2.y; --j) {
+                    diagram[j * ROW_SIZE + lines[i].p1.x] += 1;
+                }
+            }
+        }
+
+        if (lines[i].p1.y == lines[i].p2.y) {
+            if (lines[i].p2.x > lines[i].p1.x) {
+                for (int k = lines[i].p1.x; k <= lines[i].p2.x; ++k)
+                    diagram[lines[i].p1.y * ROW_SIZE + k] += 1;
+            }
+
+            if (lines[i].p2.x < lines[i].p1.x) {
+                for (int k = lines[i].p1.x; k >= lines[i].p2.x; --k)
+                    diagram[lines[i].p1.y * ROW_SIZE + k] += 1;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < ROW_SIZE * COL_SIZE; ++i) {
+        if (diagram[i] == 2)
+            solution++;
+    }
+    showDiagram();
+    return (solution);
 }
 
 int main(int argc, char *argv[])
@@ -84,7 +141,7 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for the example part One of Day 5: %lu", partOne(INPUT));
+    printf("Solution for the example part One of Day 5: %lu", partOne(SAMPLE));
 
     return (0);
 }
