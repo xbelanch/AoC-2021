@@ -8,15 +8,49 @@
 #define MAX_SIZE_LINE 32
 #define MAX_SIZE_INPUT 500
 
+typedef struct point {
+    int x;
+    int y;
+} Point;
+
+typedef struct line {
+    Point p1;
+    Point p2;
+} Line;
+
 char *puzzle_input[MAX_SIZE_INPUT];
 size_t size_input;
+Line *lines;
 
-void dump()
+void dumpPuzzleInput()
 {
     for (size_t i = 0; i < size_input; ++i) {
         printf("%lu: %s", i, puzzle_input[i]);
     }
 }
+
+void dumpLines()
+{
+    for (size_t i = 0; i < size_input; ++i) {
+        printf("%d,%d -> %d,%d\n",
+               lines[i].p1.x,
+               lines[i].p1.y,
+               lines[i].p2.x,
+               lines[i].p2.y);
+    }
+}
+
+void parse()
+{
+    lines = malloc(sizeof(Line) * size_input);
+    int x1, y1, x2, y2;
+    for (size_t i = 0; i < size_input; ++i) {
+        sscanf(puzzle_input[i], "%d,%d -> %d,%d", &x1, &y1, &x2, &y2);
+        lines[i].p1 = (Point) {.x = x1, .y = y1};
+        lines[i].p2 = (Point) {.x = x2, .y = y2};
+    }
+}
+
 
 int readInput(char *input)
 {
@@ -40,7 +74,8 @@ int readInput(char *input)
 size_t partOne(char *input)
 {
     readInput(input);
-    dump();
+    parse();
+    dumpLines();
     return (0);
 }
 
