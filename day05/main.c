@@ -4,13 +4,14 @@
 #include <stdbool.h>
 
 #define SAMPLE "sample.txt"
+#define SAMPLE2 "sample2.txt"
 #define INPUT "input.txt"
 #define MAX_SIZE_LINE 32
 #define MAX_SIZE_INPUT 500
 
 typedef struct point {
-    size_t x;
-    size_t y;
+    int x;
+    int y;
 } Point;
 
 typedef struct line {
@@ -18,16 +19,12 @@ typedef struct line {
     Point p2;
 } Line;
 
-// typedef struct diagram {
-//     size_t *cell;
-//     size_t size;
-// } Diagram;
-
 char *puzzle_input[MAX_SIZE_INPUT];
 size_t size_input;
 Line *lines;
 size_t *diagram;
-size_t diagram_max_number;
+int diagram_max_number;
+int diagram_min_number;
 
 void dumpPuzzleInput()
 {
@@ -36,18 +33,18 @@ void dumpPuzzleInput()
     }
 }
 
-void dumpLine(size_t idx)
+void dumpLine(Line line)
 {
-        printf("%lu,%lu -> %lu,%lu\n",
-               lines[idx].p1.x,
-               lines[idx].p1.y,
-               lines[idx].p2.x,
-               lines[idx].p2.y);
+        printf("%d,%d -> %d,%d\n",
+               line.p1.x,
+               line.p1.y,
+               line.p2.x,
+               line.p2.y);
 }
 
 void showDiagram(size_t max_col)
 {
-    for (size_t i = 0; i < diagram_max_number * diagram_max_number; ++i) {
+    for (size_t i = 0; i < max_col * max_col; ++i) {
         if (i % max_col == 0)
             putchar('\n');
         if (diagram[i] == 0) {
@@ -66,9 +63,9 @@ void showDiagram(size_t max_col)
 void parse()
 {
     lines = malloc(sizeof(Line) * size_input);
-    size_t x1, y1, x2, y2;
+    int x1, y1, x2, y2;
     for (size_t i = 0; i < size_input; ++i) {
-        sscanf(puzzle_input[i], "%lu,%lu -> %lu,%lu", &x1, &y1, &x2, &y2);
+        sscanf(puzzle_input[i], "%d,%d -> %d,%d", &x1, &y1, &x2, &y2);
         lines[i].p1 = (Point) {.x = x1, .y = y1};
         lines[i].p2 = (Point) {.x = x2, .y = y2};
     }
@@ -90,7 +87,8 @@ void parse()
     }
 
     diagram_max_number += 1;
-    printf("diagram_max_number: %lu\n", diagram_max_number);
+
+    printf("diagram_max_number: %d\n", diagram_max_number);
 }
 
 int readInput(char *input)
@@ -112,6 +110,17 @@ int readInput(char *input)
     return (0);
 }
 
+int diagramUpdate(size_t *diagram, int x, int y)
+{
+    int val = 0;
+    if (diagram[y * diagram_max_number + x] == 1)
+        val++;
+
+    diagram[y * diagram_max_number + x]++;
+
+    return val;
+}
+
 size_t partOne(char *input)
 {
     size_t solution = 0;
@@ -123,38 +132,42 @@ size_t partOne(char *input)
         diagram[i] = 0;
     }
 
+    // TODO: Solve this solution
     for (size_t i = 0; i < size_input; ++i) {
-        if (lines[i].p1.x == lines[i].p2.x) {
-            if (lines[i].p2.y > lines[i].p1.y) {
-                for (size_t j = lines[i].p1.y; j <= lines[i].p2.y; ++j)
-                    diagram[j * diagram_max_number + lines[i].p1.x] += 1;
-            }
-            if (lines[i].p2.y < lines[i].p1.y) {
-                for (size_t j = lines[i].p1.y; j >= lines[i].p2.y; --j) {
-                    diagram[j * diagram_max_number + lines[i].p1.x] += 1;
-                }
-            }
-        }
-
-        if (lines[i].p1.y == lines[i].p2.y) {
-            if (lines[i].p2.x > lines[i].p1.x) {
-                for (size_t j = lines[i].p1.x; j <= lines[i].p2.x; ++j)
-                    diagram[lines[i].p1.y * diagram_max_number + j] += 1;
+        Line line = lines[i];
+        if (line.p1.x == line.p2.x) {
+            int x = line.p1.x;
+            int y0, y1;
+            if (line.p2.y > line.p1.y) {
+                y1 = line.p2.y;
+                y0 = line.p1.y;
+            } else {
+                y1 = line.p1.y;
+                y0 = line.p2.y;
             }
 
-            if (lines[i].p2.x < lines[i].p1.x) {
-                for (size_t j = lines[i].p1.x; j >= lines[i].p2.x; --j)
-                    diagram[lines[i].p1.y * diagram_max_number + j] += 1;
+            for (int y = y0; y <= y1; ++y) {
+                solution += diagramUpdate(diagram, x, y);
+            }
+
+        } else if (line.p1.y == line.p2.y) {
+            int y = line.p1.y;
+            int x0, x1;
+            if (line.p2.x > line.p1.x) {
+                x1 = line.p2.x;
+                x0 = line.p1.x;
+            } else {
+                x1 = line.p1.x;
+                x0 = line.p2.x;
+            }
+
+            for (int x = x0; x <= x1; ++x) {
+                solution += diagramUpdate(diagram, x, y);
             }
         }
     }
 
-    showDiagram(diagram_max_number);
-
-    for (size_t i = 0; i < diagram_max_number * diagram_max_number; ++i) {
-        if (diagram[i] == 2)
-            solution++;
-    }
+    showDiagram(10);
 
     return (solution);
 }
@@ -165,7 +178,8 @@ int main(int argc, char *argv[])
     (void) argv[0];
 
     printf("Solution for the example part One of Day 5: %lu\n", partOne(SAMPLE));
-    // printf("Solution for the part One of Day 5: %lu\n", partOne(INPUT));
+    printf("Solution for the example part One of Day 5: %lu\n", partOne(SAMPLE2));
+    printf("Solution for the part One of Day 5: %lu\n", partOne(INPUT));
 
     return (0);
 }
