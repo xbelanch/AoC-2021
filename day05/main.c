@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define SAMPLE "sample.txt"
 #define SAMPLE2 "sample2.txt"
@@ -53,6 +54,8 @@ void showDiagram(size_t max_col)
             putchar('1');
         } else if (diagram[i] == 2) {
             putchar('2');
+        } else if (diagram[i] == 3){
+            putchar('3');
         } else {
             putchar('?');
         }
@@ -167,7 +170,93 @@ size_t partOne(char *input)
         }
     }
 
-    showDiagram(10);
+    if (strcmp(input, SAMPLE) == 0)
+        showDiagram(10);
+
+    return (solution);
+}
+
+size_t partTwo(char *input)
+{
+    size_t solution = 0;
+    readInput(input);
+    parse();
+
+    diagram = malloc(sizeof(size_t) * diagram_max_number * diagram_max_number);
+    for (size_t i = 0; i < diagram_max_number * diagram_max_number ; ++i) {
+        diagram[i] = 0;
+    }
+
+    // TODO: Solve this solution
+    for (size_t i = 0; i < size_input; ++i) {
+        Line line = lines[i];
+
+        // Horizontal and vertical
+        if (line.p1.x == line.p2.x) {
+            int x = line.p1.x;
+            int y0, y1;
+            if (line.p2.y > line.p1.y) {
+                y1 = line.p2.y;
+                y0 = line.p1.y;
+            } else {
+                y1 = line.p1.y;
+                y0 = line.p2.y;
+            }
+
+            for (int y = y0; y <= y1; ++y) {
+                solution += diagramUpdate(diagram, x, y);
+            }
+
+        } else if (line.p1.y == line.p2.y) {
+            int y = line.p1.y;
+            int x0, x1;
+            if (line.p2.x > line.p1.x) {
+                x1 = line.p2.x;
+                x0 = line.p1.x;
+            } else {
+                x1 = line.p1.x;
+                x0 = line.p2.x;
+            }
+
+            for (int x = x0; x <= x1; ++x) {
+                solution += diagramUpdate(diagram, x, y);
+            }
+        } else {
+            // Diagonal lines
+            if (abs(line.p1.x - line.p2.x) == abs(line.p1.y - line.p2.y)) {
+                // dumpLine(line);
+                int x0, x1, y0, y1;
+                x0 = line.p1.x;
+                x1 = line.p2.x;
+                y0 = line.p1.y;
+                y1 = line.p2.y;
+                if (line.p1.x < line.p2.x && line.p1.y < line.p2.y) {
+                    for  (int x = x0, y = y0; x <= x1 && y <= y1; ++x, ++y) {
+                    solution += diagramUpdate(diagram, x, y);
+                    // printf("solution 1: %lu at %d,%d\n", solution, x, y);
+                    }
+                } else if (line.p1.x < line.p2.x && line.p1.y > line.p2.y) {
+                    for  (int x = x0, y = y0; x <= x1 && y >= y1; ++x, --y) {
+                    solution += diagramUpdate(diagram, x, y);
+                    // printf("solution 2: %lu at %d,%d\n", solution, x, y);
+                    }
+                } else if (line.p1.x > line.p2.x && line.p1.y < line.p2.y) {
+                    for  (int x = x0, y = y0; x >= x1 && y <= y1; --x, ++y) {
+                        solution += diagramUpdate(diagram, x, y);
+                        // printf("solution 3: %lu at %d,%d\n", solution, x, y);
+                    }
+                } else if (line.p1.x > line.p2.x && line.p1.y > line.p2.y) {
+                    for  (int x = x0, y = y0; x >= x1 && y >= y1; --x, --y) {
+                        solution += diagramUpdate(diagram, x, y);
+                        // printf("solution 4: %lu at %d,%d\n", solution, x, y);
+                    }
+                }
+            }
+        }
+    }
+
+    if (strcmp(input, SAMPLE) == 0)
+        showDiagram(10);
 
     return (solution);
 }
@@ -177,9 +266,10 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for the example part One of Day 5: %lu\n", partOne(SAMPLE));
-    printf("Solution for the example part One of Day 5: %lu\n", partOne(SAMPLE2));
-    printf("Solution for the part One of Day 5: %lu\n", partOne(INPUT));
+    printf("Solution for the example part One of Day 5: %lu points\n", partOne(SAMPLE));
+    printf("Solution for the part One of Day 5: %lu points\n", partOne(INPUT));
+    printf("Solution for the example part Two of Day 5: %lu points\n", partTwo(SAMPLE));
+    printf("Solution for the part Two of Day 5: %lu points\n", partTwo(INPUT));
 
     return (0);
 }
