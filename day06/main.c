@@ -5,7 +5,7 @@
 #define SAMPLE "sample.txt"
 #define INPUT "input.txt"
 #define MAX_SIZE_LINE 1024
-#define MAX_SIZE_LANTERFISHES 1024 * 1024
+#define MAX_SIZE_LANTERFISHES 1024 * 1024 * 1024
 
 size_t days;
 size_t *lanterfishes;
@@ -100,7 +100,8 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for sample of part One of Day 6: %lu", partOne(SAMPLE));
+    printf("Solution for sample of part One of Day 6: %lu\n", partOne(SAMPLE));
+    printf("Solution of part One of Day 6: %lu\n", partOne(INPUT));
 
     return (0);
 }
