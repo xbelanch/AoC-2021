@@ -11,15 +11,27 @@ size_t days;
 size_t *lanterfishes;
 size_t size_lanterfishes;
 
-void printInitialState()
+void dump()
 {
-    printf("Initial state: ");
     for (size_t i = 0; i < size_lanterfishes - 1; ++i) {
         printf("%lu,", lanterfishes[i]);
     }
 
     printf("%lu", lanterfishes[size_lanterfishes - 1]);
     putchar('\n');
+}
+
+void printInitialState()
+{
+    printf("Initial state: ");
+    dump();
+}
+
+void printDay(size_t day)
+{
+    char plural[2] = {' ', 's'};
+    printf("After\t %lu day%c:", day, day > 1 ? plural[1] : plural[0]);
+    dump();
 }
 
 int readInput(char *input)
@@ -51,8 +63,33 @@ int readInput(char *input)
 
 size_t partOne(char *input)
 {
+    days = 0;
+    size_t newfishes = 0;
     readInput(input);
     printInitialState();
+
+    while (days < 80) {
+        days++;
+
+        for (size_t i = 0; i < size_lanterfishes; ++i) {
+            if (lanterfishes[i] == 0) {
+                newfishes++;
+                lanterfishes[i] = 6;
+            } else {
+                lanterfishes[i]--;
+            }
+        }
+
+        if (newfishes > 0) {
+            for (size_t i = size_lanterfishes; i < (size_lanterfishes + newfishes); ++i) {
+                lanterfishes[i] = 8;
+            }
+            size_lanterfishes += newfishes;
+            newfishes = 0;
+        }
+
+        // printDay(days);
+    }
 
     return (size_lanterfishes);
 }
