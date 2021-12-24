@@ -5,11 +5,12 @@
 #define SAMPLE "sample.txt"
 #define INPUT "input.txt"
 #define MAX_SIZE_LINE 1024
-#define MAX_SIZE_LANTERFISHES 1024 * 1024 * 1024
+#define MAX_SIZE_LANTERFISHES 1024 * 512
+#define i64     unsigned long long
 
 size_t days;
 size_t *lanterfishes;
-size_t size_lanterfishes;
+i64 size_lanterfishes;
 
 void dump()
 {
@@ -61,14 +62,59 @@ int readInput(char *input)
     return (0);
 }
 
-size_t partOne(char *input)
+i64 partTwo(char *input, size_t maxDays)
+{
+    i64 solution = 0;
+    size_t days = 0;
+    readInput(input);
+
+    i64 table[9] = {0, 0, 0, 0, 0, 0, 0, 0};
+    i64 backdrop[9];
+
+    for (size_t i = 0; i < size_lanterfishes; ++i) {
+        table[lanterfishes[i]]++;
+    }
+
+    for (size_t i = 0; i < 9; ++i) {
+        backdrop[i] = table[i];
+    }
+
+    while (days < maxDays)
+    {
+        for (size_t i = 0; i < 9; ++i) {
+            if (backdrop[i] >= 1) {
+                if (i == 0) {
+                    backdrop[8] += table[i];
+                    backdrop[6] += table[i];
+                }
+                backdrop[i - 1] += table[i];
+                backdrop[i] -= table[i];
+            }
+
+        }
+
+        for (size_t i = 0; i < 9; ++i)
+            table[i] = backdrop[i];
+
+        days++;
+    }
+
+    for (size_t i = 0; i < 9; ++i) {
+        solution += table[i];
+    }
+
+    return (solution);
+}
+
+// Using brute force... dumb approach!
+i64 partOne(char *input, size_t maxDays)
 {
     days = 0;
     size_t newfishes = 0;
     readInput(input);
-    printInitialState();
+    // printInitialState();
 
-    while (days < 80) {
+    while (days < maxDays) {
         days++;
 
         for (size_t i = 0; i < size_lanterfishes; ++i) {
@@ -91,17 +137,19 @@ size_t partOne(char *input)
         // printDay(days);
     }
 
+    free(lanterfishes);
     return (size_lanterfishes);
 }
-
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for sample of part One of Day 6: %lu\n", partOne(SAMPLE));
-    printf("Solution of part One of Day 6: %lu\n", partOne(INPUT));
+    printf("PartOne for sample of part One of Day 6: %llu\n", partOne(SAMPLE, 80));
+    printf("PartOne of part One of Day 6: %llu\n", partOne(INPUT, 80));
+    printf("PartOne for sample of part Two of Day 6: %llu\n", partTwo(SAMPLE, 256));
+    printf("PartOne of part Two of Day 6: %llu\n", partTwo(INPUT, 256));
 
     return (0);
 }
