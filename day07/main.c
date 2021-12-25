@@ -115,9 +115,12 @@ i64 cheapestFuel()
 
 i64 cheapestFuelV2()
 {
-    i64 cheap = 9999999;
+    // TODO: Need to fix this limit value
+    // Sure there's a better way to do that
+    // Brute force approach at this moment
+    i64 cheap = 999999999999;
     i64 cost;
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < 512; ++i) {
         cost = outcomeV2(i);
         if (cost < cheap)
             cheap = cost;
@@ -148,6 +151,6 @@ int main(int argc, char *argv[])
     printf("Solution for sample of part One of Day 7: %llu\n", partOne(SAMPLE));
     printf("Solution for part One of Day 7: %llu\n", partOne(INPUT));
     printf("Solution for sample of part Two of Day 7: %llu\n", partTwo(SAMPLE));
-
+    printf("Solution for part Two of Day 7: %llu\n", partTwo(INPUT));
     return (0);
 }
