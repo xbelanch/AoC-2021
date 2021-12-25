@@ -4,10 +4,10 @@
 
 #define SAMPLE "sample.txt"
 #define INPUT "input.txt"
-#define MAX_SIZE_LINE 2048
+#define MAX_SIZE_LINE 4096
 #define i64 unsigned long long
 
-int hp[2048];
+int hp[4096];
 
 void dumpInput()
 {
@@ -74,21 +74,33 @@ i64 outcome(int fuel)
     return (cost);
 }
 
+i64 cheapestFuel()
+{
+    i64 cheap = 9999999;
+    i64 cost;
+    for (int i = 0; i < 8192; ++i) {
+        cost = outcome(i);
+        if (cost < cheap)
+            cheap = cost;
+    }
+    return (cheap);
+}
+
 i64 partOne(const char *input)
 {
     memset(hp, 0, sizeof hp);
     readInput(input);
-    dumpInput();
-    return (outcome(2));
+    // dumpInput();
+    return (cheapestFuel());
 }
-
 
 int main(int argc, char *argv[])
 {
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for sample of part One of Day 7: %llu", partOne(SAMPLE));
+    printf("Solution for sample of part One of Day 7: %llu\n", partOne(SAMPLE));
+    printf("Solution for part One of Day 7: %llu\n", partOne(INPUT));
 
     return (0);
 }
