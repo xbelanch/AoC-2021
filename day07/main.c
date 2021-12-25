@@ -67,8 +67,35 @@ i64 outcome(int fuel)
 {
     size_t cost = 0;
     for (int i = 0 ; i < 2048; ++i) {
-        if (hp[i] >= 0) {
+        if (hp[i] > 0) {
             cost += abs(i - fuel) * hp[i];
+        }
+    }
+    return (cost);
+}
+
+i64 outcomeV2(int fuel)
+{
+    size_t cost = 0;
+    for (int i = 0; i < 2048; ++i) {
+        if (hp[i] > 0) {
+            int start;
+            int end;
+
+            if (i > fuel) {
+                start = fuel;
+                end = i;
+            } else {
+                start = i;
+                end = fuel;
+            }
+            // printf("start: %d, end: %d", start, end);
+            int res = 0;
+            for (int k = 1, j = start; j < end ; ++j, ++k) {
+                res += k;
+            }
+            // printf(": %d fuel\n", res);
+            cost += res * hp[i];
         }
     }
     return (cost);
@@ -86,12 +113,31 @@ i64 cheapestFuel()
     return (cheap);
 }
 
+i64 cheapestFuelV2()
+{
+    i64 cheap = 9999999;
+    i64 cost;
+    for (int i = 0; i < 32; ++i) {
+        cost = outcomeV2(i);
+        if (cost < cheap)
+            cheap = cost;
+    }
+    return (cheap);
+}
+
 i64 partOne(const char *input)
 {
     memset(hp, 0, sizeof hp);
     readInput(input);
     // dumpInput();
     return (cheapestFuel());
+}
+
+i64 partTwo(const char *input)
+{
+    memset(hp, 0, sizeof hp);
+    readInput(input);
+    return (cheapestFuelV2());
 }
 
 int main(int argc, char *argv[])
@@ -101,6 +147,7 @@ int main(int argc, char *argv[])
 
     printf("Solution for sample of part One of Day 7: %llu\n", partOne(SAMPLE));
     printf("Solution for part One of Day 7: %llu\n", partOne(INPUT));
+    printf("Solution for sample of part Two of Day 7: %llu\n", partTwo(SAMPLE));
 
     return (0);
 }
