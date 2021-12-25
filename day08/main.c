@@ -17,9 +17,21 @@ int readInput(const char *input)
     }
 
     s = malloc(sizeof(char) * MAX_SIZE_LINE);
+    char *s0[10];
+    char *s1[4];
+
+    for (size_t i = 0; i < 10; ++i)
+        s0[i] = malloc(sizeof(char) * 9);
+    for (size_t i = 0; i < 4; ++i)
+        s1[i] = malloc(sizeof(char) * 4);
+
     while (fgets(s, MAX_SIZE_LINE, fp) != NULL) {
-        printf("%s", s);
+        sscanf(s, "%s %s %s %s %s %s %s %s %s %s | %s %s %s %s",
+               s0[0], s0[1], s0[2], s0[3], s0[4], s0[5], s0[6], s0[7], s0[8], s0[9],
+               s1[0], s1[1], s1[2], s1[3]);
     }
+
+    printf("%s\n", s0[9]);
 
     fclose(fp);
     return (0);
