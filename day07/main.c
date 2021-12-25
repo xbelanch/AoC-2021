@@ -7,13 +7,13 @@
 #define MAX_SIZE_LINE 2048
 #define i64 unsigned long long
 
-int hp[9999];
+int hp[2048];
 
 void dumpInput()
 {
-    for (size_t i = 0; i < 32; ++i) {
-        if (hp[i] >= 0)
-            printf("hp[%d] = %d\n", hp[i], abs(hp[i] - 2));
+    for (size_t i = 0; i < 2048; ++i) {
+        if (hp[i] > 0)
+            printf("hp[%lu] = %d\n", i, hp[i]);
     }
 }
 
@@ -42,7 +42,7 @@ int readInput(const char *input)
                 len = end - start;
                 memcpy(num, start, len);
                 idx = atoi(num);
-                hp[idx] = idx;
+                hp[idx]++;
                 // printf("%lu\n", idx);
                 end++;
                 start = end;
@@ -55,7 +55,7 @@ int readInput(const char *input)
         len = end - start;
         memcpy(num, start, len);
         idx = atol(num);
-        hp[idx] = idx;
+        hp[idx]++;
         // printf("%lu\n", idx);
     }
 
@@ -63,13 +63,23 @@ int readInput(const char *input)
     return (0);
 }
 
+i64 outcome(int fuel)
+{
+    size_t cost = 0;
+    for (int i = 0 ; i < 2048; ++i) {
+        if (hp[i] >= 0) {
+            cost += abs(i - fuel) * hp[i];
+        }
+    }
+    return (cost);
+}
+
 i64 partOne(const char *input)
 {
-    i64 solution = 0;
-    memset(hp, -1, sizeof hp);
+    memset(hp, 0, sizeof hp);
     readInput(input);
     dumpInput();
-    return (solution);
+    return (outcome(2));
 }
 
 
