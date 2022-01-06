@@ -5,6 +5,7 @@
 #define MAX_SIZE_LINE 4096
 #define SAMPLE "sample.txt"
 #define INPUT "input.txt"
+#define MAX_SEGMENTS 7
 #define i64 unsigned long long
 
 // Unique
@@ -21,7 +22,6 @@
 // 6: 6
 // 9: 6
 
-
 i64 partOne(const char *input)
 {
     FILE *fp;
@@ -36,8 +36,8 @@ i64 partOne(const char *input)
     char *s0[10];
     char *s1[4];
 
-    for (size_t i = 0; i < 10; ++i) s0[i] = malloc(sizeof(char) * 9);
-    for (size_t i = 0; i < 4; ++i) s1[i] = malloc(sizeof(char) * 4);
+    for (size_t i = 0; i < 10; ++i) s0[i] = malloc(sizeof(char) * MAX_SEGMENTS);
+    for (size_t i = 0; i < 4; ++i) s1[i] = malloc(sizeof(char) * MAX_SEGMENTS);
 
     i64 count = 0;
     while (fgets(s, MAX_SIZE_LINE, fp) != NULL) {
