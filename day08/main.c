@@ -4,7 +4,7 @@
 
 #define MAX_SIZE_LINE 4096
 #define SAMPLE "sample.txt"
-#define OUTPUT "ouput.txt"
+#define INPUT "input.txt"
 #define i64 unsigned long long
 
 // Unique
@@ -62,7 +62,8 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv[0];
 
-    printf("Solution for sample of part One of Day 8: %llu", partOne(SAMPLE));
+    printf("Solution for sample of part One of Day 8: %llu\n", partOne(SAMPLE));
+    printf("Solution for part One of Day 8: %llu\n", partOne(INPUT));
 
     return (0);
 }
